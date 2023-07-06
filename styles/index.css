@@ -182,6 +182,11 @@ main {
   border: none;
   background-color: var(--secondary-font-color);
   color: var(--third-font-color);
+  transition: background-color 0.3s ease;
+}
+
+.hero-subscribe button:hover {
+  background: #389a6f;
 }
 
 .section-title{
@@ -242,13 +247,13 @@ main {
   align-items: center;
 }
 
-.regular-price {
+.member-price {
   font-size: 18px;
   font-weight: 600;
   color: var(--secondary-font-color);
 }
 
-.member-price {
+.regular-price {
   font-size: 14px;
   font-weight: 500;
   color: var(--fourth-font-color);
@@ -276,7 +281,8 @@ main {
 }
 
 .product-price button:hover{
-  box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
+  background: #D2F2E3;
+  color: #2AA667;
 }
 
 
