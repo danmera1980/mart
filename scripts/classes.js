@@ -24,7 +24,9 @@ export class Inventory {
 
   newProduct(product) {}
 
-  getProductByID(id) {}
+  getProductByID(id) {
+    return this.inventory.find((product) => product.id === parseInt(id));
+  }
 
   saveProduct(product) {}
 
@@ -40,6 +42,42 @@ export class Inventory {
   }
 }
 
+export class ShoppingCart {
+  constructor() {
+    this.cart = [];
+  }
+
+  addProduct(product){
+    this.cart.push(product);
+    Storage.saveCart(this.cart)
+  }
+
+  removeProductById(productId){
+    const index = this.cart.findIndex(product => product.id === id)
+
+    if(index !== -1){
+      this.cart.splice(index, 1);
+      console.log(`Item ${id} removed from cart`);
+    } else {
+      console.log(`Item ${id} not found in the cart`);
+    }
+  }
+
+  viewCart(){
+    if(this.cart.length === 0){
+      console.log('The cart is empty');
+    } else {
+      console.log();
+    }
+  }
+
+  calculateSubtotal(isMember){}
+
+  calculateTax(isMember){}
+
+  checkout(isMember, cash) {}
+}
+
 export class UI {
   init(inventory) {
     this.setHomePage(inventory);
@@ -53,6 +91,38 @@ export class UI {
     }
   }
 
+  setCartPage(cart){
+    let output = "";
+    console.log(cart.cart);
+
+    if (cart.length === 0) {
+      output = `
+        <div>There are no Products</div>
+      `;
+    } else {
+      for (let product of cart) {
+        output += `
+        <div class="product-item">
+          <div class="product-image">
+            <img src="/assets/images/${product.image}" alt="product" />
+          </div>
+          <div class="product-details">
+            <span class="product-name">${product.name}</span>
+            <span class="product-availability"><b>Available:</b> ${product.quantity}</span>
+          </div>
+          <div class="product-price">
+            <span class="member-price">$${product.memberPrice}</span>
+            <span class="regular-price">$${product.regularPrice}</span>
+            <button class="add-to-cart-btn" data-id="${product.id}"><i class="fa fa-cart-shopping" data-id="${product.id}"></i>Add</button>
+          </div>
+        </div>
+      `;
+      }
+    }
+
+    products.innerHTML = output;
+  }
+
   setProductPage(product) {}
 
   setNewProductPage(product) {}
@@ -62,35 +132,42 @@ export class UI {
   setInventory(inventory) {
     // insert HTML inventory code here
     let output = "";
-
-    for (let product of inventory) {
-      output += `
-      <div class="product-item">
-        <div class="product-image">
-          <img src="/assets/images/${product.image}" alt="product" />
+    if(inventory.length === 0){
+      output = `
+        <div>There are no Products</div>
+      `;
+    } else {
+      for (let product of inventory) {
+        output += `
+        <div class="product-item">
+          <div class="product-image">
+            <img src="/assets/images/${product.image}" alt="product" />
+          </div>
+          <div class="product-details">
+            <span class="product-name">${product.name}</span>
+            <span class="product-availability"><b>Available:</b> ${product.quantity}</span>
+          </div>
+          <div class="product-price">
+            <span class="member-price">$${product.memberPrice}</span>
+            <span class="regular-price">$${product.regularPrice}</span>
+            <button class="add-to-cart-btn" data-id="${product.id}"><i class="fa fa-cart-shopping" data-id="${product.id}"></i>Add</button>
+          </div>
         </div>
-        <div class="product-details">
-          <span class="product-name">${product.name}</span>
-          <span class="product-availability"><b>Available:</b> ${product.quantity}</span>
-        </div>
-        <div class="product-price">
-          <span class="member-price">$${product.memberPrice}</span>
-          <span class="regular-price">$${product.regularPrice}</span>
-          <button><i class="fa fa-cart-shopping"></i>Add</button>
-        </div>
-      </div>
-    `;
+      `;
+      }
     }
+
 
     products.innerHTML = output;
   }
+
 }
 
 export class Storage {
   constructor() {
     this.storage = localStorage.getItem("mart")
       ? localStorage.getItem("mart")
-      : { inventory: [] };
+      : { inventory: [], cart: [] };
   }
 
   static saveStorage(storage) {
@@ -101,7 +178,7 @@ export class Storage {
   static getStorage() {
     this.storage = localStorage.getItem("mart")
       ? JSON.parse(localStorage.getItem("mart"))
-      : { inventory: [] };
+      : { inventory: [], cart: [] };
     return this.storage;
   }
 
@@ -113,8 +190,21 @@ export class Storage {
     return this.storage.inventory;
   }
 
+  static getCart() {
+    this.storage = localStorage.getItem("mart")
+      ? JSON.parse(localStorage.getItem("mart"))
+      : { cart: [] };
+    
+      return this.storage.cart;
+  }
+
   static saveInventory(inventory) {
     this.storage.inventory = inventory;
+    this.saveStorage(this.storage);
+  }
+
+  static saveCart(cart) {
+    this.storage.cart = cart;
     this.saveStorage(this.storage);
   }
 
@@ -131,6 +221,7 @@ export class Storage {
           taxable: product.taxable,
         };
       }),
+      cart: [],
     };
     this.saveStorage(this.storage);
   }

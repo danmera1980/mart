@@ -1,6 +1,6 @@
-import { inventoryData } from "./data.js";
-import { linksListener } from "./eventListeners.js";
-import { main, products } from "./selectors.js";
+import { cartListener, linksListener } from "./eventListeners.js";
+import { cartIcon, item, logoIcon, main, products } from "./selectors.js";
 
-main.addEventListener("click", linksListener);
-// products.addEventListener("click", linksListener);
+logoIcon.addEventListener("click", linksListener);
+products.addEventListener("click", linksListener);
+cartIcon.addEventListener("click", cartListener );
