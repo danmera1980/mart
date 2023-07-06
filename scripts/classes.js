@@ -1,8 +1,11 @@
+import { inventoryData } from "./data.js";
+import { products } from "./selectors.js";
 export class Product {
-  constructor(id, image, name, memberPrice, regularPrice, taxable) {
+  constructor(id, image, name, quantity, memberPrice, regularPrice, taxable) {
     this.id = id;
     this.image = image;
     this.name = name;
+    this.quantity = quantity;
     this.memberPrice = memberPrice;
     this.regularPrice = regularPrice;
     this.taxable = taxable;
@@ -14,7 +17,10 @@ export class Inventory {
     this.inventory = Storage.getStorage().inventory;
   }
 
-  getInventory() {}
+  getInventory() {
+    this.inventory = Storage.getStorage().inventory;
+    return this.inventory;
+  }
 
   newProduct(product) {}
 
@@ -40,10 +46,10 @@ export class UI {
   }
 
   setHomePage(inventory) {
-    if(inventory){
-      this.setInventory(inventory)
+    if (inventory) {
+      this.setInventory(inventory);
     } else {
-      this.setInventory(Storage.getInventory())
+      this.setInventory(Storage.getInventory());
     }
   }
 
@@ -53,7 +59,31 @@ export class UI {
 
   setEditProductPage(product) {}
 
-  setInventory(inventory) {}
+  setInventory(inventory) {
+    // insert HTML inventory code here
+    let output = "";
+
+    for (let product of inventory) {
+      output += `
+      <div class="product-item">
+        <div class="product-image">
+          <img src="/assets/images/${product.image}" alt="product" />
+        </div>
+        <div class="product-details">
+          <span class="product-name">${product.name}</span>
+          <span class="product-availability"><b>Available:</b> ${product.quantity}</span>
+        </div>
+        <div class="product-price">
+          <span class="member-price">$${product.memberPrice}</span>
+          <span class="regular-price">$${product.regularPrice}</span>
+          <button><i class="fa fa-cart-shopping"></i>Add</button>
+        </div>
+      </div>
+    `;
+    }
+
+    products.innerHTML = output;
+  }
 }
 
 export class Storage {
@@ -90,11 +120,12 @@ export class Storage {
 
   static tempInit() {
     this.storage = {
-      inventory: inventory.map((product) => {
+      inventory: inventoryData.map((product) => {
         return {
           id: product.id,
           image: product.image,
           name: product.name,
+          quantity: product.quantity,
           memberPrice: product.memberPrice,
           regularPrice: product.regularPrice,
           taxable: product.taxable,

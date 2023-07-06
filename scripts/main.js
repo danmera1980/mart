@@ -1,6 +1,6 @@
-import { products } from './selectors.js';
-import { items } from './data.js';
+import { inventoryData } from "./data.js";
+import { linksListener } from "./eventListeners.js";
+import { main, products } from "./selectors.js";
 
-console.log(items);
-
-
+main.addEventListener("click", linksListener);
+// products.addEventListener("click", linksListener);
