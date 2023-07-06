@@ -93,7 +93,7 @@ export class UI {
 
   setCartPage(cart){
     let output = "";
-    console.log(cart.cart);
+    console.log(cart);
 
     if (cart.length === 0) {
       output = `

@@ -19,6 +19,7 @@ export const PageState = function () {
 
 export const homeState = function (inventory) {
   const home = document.querySelector("#home");
+  console.log(inventory, localStorage.getItem("mart"));
 
   if (!localStorage.getItem("mart")) {
     Storage.tempInit();
