@@ -20,7 +20,15 @@ body {
   padding: 0;
 }
 
-main, .header-container{
+hr {
+  max-width: 1024px;
+  margin: 0 auto;
+  background-color: rgba(173, 173, 173, 0.30);
+  border: none;
+  height: 1px;
+}
+
+main, .header-container, footer{
   margin: 0 auto;
   max-width: 1024px;
 }
@@ -29,7 +37,6 @@ header {
   background-color: rgba(255, 255, 255, 0.90);
   backdrop-filter: blur(15px);
   color: var(--primary-font-color);
-  border-bottom: solid 1px rgba(173, 173, 173, 0.30);
   position: sticky;
   top: 0;
 }
@@ -255,6 +262,10 @@ main {
 }
 
 .product-price button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   height: 34px;
   width: 90px;
   border-radius: 2px;
@@ -270,8 +281,30 @@ main {
 
 
 footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: var(--background-color);
   color: var(--primary-font-color);
   padding: 10px;
-  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
+
+.footer-right {
+  display: flex;
+  gap: 16px;
+}
+
+.fa-brands {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-font-color);
+  color: var(--third-font-color);
+  border-radius: 50%;
+  font-size: 20px;
+  height: 44px;
+  width: 44px;
+}
+
