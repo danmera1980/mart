@@ -218,6 +218,17 @@ header {
   text-align: center;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.menu span{
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--primary-title-color);
+}
+
+.menu span:hover{
+  color: var(--secondary-font-color);
 }
 
 .logo{
@@ -261,6 +272,10 @@ header {
 .cart span {
   font-size: 28px;
   color: var(--primary-title-color);
+}
+
+.cart span:hover{
+  color: var(--secondary-font-color);
 }
 
 .cart-amount{

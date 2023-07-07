@@ -13,4 +13,5 @@ export const heroSection = document.querySelector(".hero");
 export const productsTitle = document.querySelector(".section-title");
 export const deleteButton = document.querySelector(".delete-btn")
 export const changeAmount = document.querySelector("#change");
-export const cartTotal = document.querySelector("#cart-total")
+export const cartTotal = document.querySelector("#cart-total");
+export const menuOption = document.querySelector("#productsPage");
