@@ -19,7 +19,6 @@ export const homePageListener = (e) => {
 export const linksListener = (e) => {
   e.preventDefault();
   let tempProduct;
-  let tempList;
   let id = e.target.dataset.id;
   if (
     e.target.hasAttribute("data-id") &&
@@ -27,9 +26,12 @@ export const linksListener = (e) => {
   ) {
     if (id) {
       tempProduct = inventoryList.getProductByID(id);
-      cartList.addProduct(tempProduct);
-      createToaster("Item added to the cart", 3000);
-      ui.updateCartIcon();
+      if(cartList.addProduct(tempProduct, inventoryList)){
+        createToaster("Item added to the cart", 3000);
+        ui.updateCartIcon();
+      } else {
+        createToaster("Item cannot be added to the cart.\nThere are no more of this item.", 3000, 'warning');
+      }
     } else {
       page.change(new homeState(inventoryList.getInventory()));
     }

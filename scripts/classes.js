@@ -61,7 +61,8 @@ export class ShoppingCart {
     this.cart = [];
   }
 
-  addProduct(product) {
+  addProduct(product, inventory) {
+    let added = false;
     let itemIndex = this.cart.findIndex((item) => product.id === item.id);
     let newProduct = {
       id: product.id,
@@ -72,15 +73,27 @@ export class ShoppingCart {
       regularPrice: product.regularPrice,
       taxable: product.taxable,
     };
+    let inventoryProductIndex = inventory.inventory.findIndex(
+      (item) => item.id === product.id
+    );
+    let inventoryProduct = inventory.inventory[inventoryProductIndex];
 
     if (itemIndex === -1) {
       newProduct.quantity = 1;
       this.cart.push(newProduct);
       Storage.saveCart(this.cart);
+      added = true;
     } else {
-      this.cart[itemIndex].quantity = this.cart[itemIndex].quantity + 1;
-      Storage.saveCart(this.cart);
+      if (inventoryProduct.quantity > this.cart[itemIndex].quantity) {
+        this.cart[itemIndex].quantity = this.cart[itemIndex].quantity + 1;
+        Storage.saveCart(this.cart);
+        added = true;
+      } else {
+        added = false;
+      }
     }
+
+    return added;
   }
 
   removeProductById(productId) {
@@ -206,10 +219,10 @@ export class UI {
       this.setInventory(Storage.getInventory());
     }
     const images = document.getElementsByClassName("item-image");
-    for(let image of images){
+    for (let image of images) {
       image.onerror = () => {
-        image.src = '/assets/images/no-image.png'
-      }
+        image.src = "/assets/images/no-image.png";
+      };
     }
     this.updateCartIcon();
   }
@@ -516,14 +529,14 @@ export class Storage {
     this.saveStorage(this.storage);
   }
 
-  static cancelTransaction(){
-    this.storage.cart = []
-    this.saveStorage(this.storage)
+  static cancelTransaction() {
+    this.storage.cart = [];
+    this.saveStorage(this.storage);
   }
 
   static updateInventory(cart) {
-    for (let item of this.storage.inventory){
-      for(let product of cart){
+    for (let item of this.storage.inventory) {
+      for (let product of cart) {
         if (item.id === product.id) {
           item.quantity = parseInt(item.quantity) - parseInt(product.quantity);
         }
