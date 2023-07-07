@@ -1,8 +1,13 @@
 export const main = document.querySelector("#main");
+export const isMember = document.querySelector("#isMember");
+export const firstName = document.querySelector('.firstName');
+export const lastName = document.querySelector(".lastName"); 
 export const logoIcon = document.querySelector(".logo");
 export const products = document.querySelector(".product-items");
 export const item = document.querySelector(".product-item");
-export const home = document.querySelector(".logo")
+export const home = document.querySelector(".logo");
 export const cartIcon = document.querySelector(".cart");
+export const cartAmount = document.querySelector('.cart-amount')
 export const heroSection = document.querySelector(".hero");
 export const productsTitle = document.querySelector(".section-title");
+export const deleteButton = document.querySelector(".delete-btn")

@@ -1,5 +1,19 @@
 import { inventoryData } from "./data.js";
-import { products } from "./selectors.js";
+import { cartAmount, products } from "./selectors.js";
+
+export class Member {
+  constructor(id, firstName, lastName, isMember) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.isMember = isMember;
+  }
+
+  updateMemberStatus() {
+    this.isMember = !this.isMember;
+  }
+}
+
 export class Product {
   constructor(id, image, name, quantity, memberPrice, regularPrice, taxable) {
     this.id = id;
@@ -47,33 +61,82 @@ export class ShoppingCart {
     this.cart = [];
   }
 
-  addProduct(product){
-    this.cart.push(product);
-    Storage.saveCart(this.cart)
+  addProduct(product) {
+    let itemIndex = this.cart.findIndex((item) => product.id === item.id);
+    let newProduct = {
+      id: product.id,
+      image: product.image,
+      name: product.name,
+      quantity: product.quantity,
+      memberPrice: product.memberPrice,
+      regularPrice: product.regularPrice,
+      taxable: product.taxable,
+    };
+
+    if (itemIndex === -1) {
+      newProduct.quantity = 1;
+      this.cart.push(newProduct);
+      Storage.saveCart(this.cart);
+    } else {
+      this.cart[itemIndex].quantity = this.cart[itemIndex].quantity + 1;
+      Storage.saveCart(this.cart);
+    }
   }
 
-  removeProductById(productId){
-    const index = this.cart.findIndex(product => product.id === id)
+  removeProductById(productId) {
+    const index = this.cart.findIndex((product) => product.id === productId);
 
-    if(index !== -1){
+    if (index !== -1) {
       this.cart.splice(index, 1);
-      console.log(`Item ${id} removed from cart`);
-    } else {
-      console.log(`Item ${id} not found in the cart`);
+      Storage.saveCart(this.cart);
     }
   }
 
-  viewCart(){
-    if(this.cart.length === 0){
-      console.log('The cart is empty');
-    } else {
-      console.log();
-    }
+  getCart() {
+    this.cart = Storage.getStorage().cart;
+    return this.cart;
   }
 
-  calculateSubtotal(isMember){}
+  calculateSubtotal(isMember) {
+    let subTotal = 0;
+    for (let product of this.cart) {
+      if (isMember) {
+        subTotal += product.quantity * parseFloat(product.memberPrice);
+      } else {
+        subTotal += product.quantity * parseFloat(product.regularPrice);
+      }
+    }
+    return subTotal;
+  }
 
-  calculateTax(isMember){}
+  calculateTax(isMember) {
+    let tax = 0;
+    let taxPercentage = 6.5;
+    for (let product of this.cart) {
+      if (isMember) {
+        if (product.taxable === "Taxable") {
+          tax +=
+            (product.quantity *
+              parseFloat(product.memberPrice) *
+              taxPercentage) /
+            100;
+        }
+      } else {
+        if (product.taxable === "Taxable") {
+          tax +=
+            (product.quantity *
+              parseFloat(product.regularPrice) *
+              taxPercentage) /
+            100;
+        }
+      }
+    }
+    return tax;
+  }
+
+  calculateChange(total, amout) {
+    return (amout - total).toFixed(2);
+  }
 
   checkout(isMember, cash) {}
 }
@@ -89,38 +152,124 @@ export class UI {
     } else {
       this.setInventory(Storage.getInventory());
     }
+    this.updateCartIcon();
   }
 
-  setCartPage(cart){
+  setCartPage(cart, member) {
+    let cartList = cart.getCart();
     let output = "";
-    console.log(cart);
+    let cartSubTotal = cart.calculateSubtotal(member).toFixed(2);
+    let cartTax = cart.calculateTax(member).toFixed(2);
+    let cartTotal = parseFloat(cartSubTotal) + parseFloat(cartTax);
 
-    if (cart.length === 0) {
+    if (cartList.length === 0) {
       output = `
         <div>There are no Products</div>
       `;
     } else {
-      for (let product of cart) {
-        output += `
-        <div class="product-item">
-          <div class="product-image">
-            <img src="/assets/images/${product.image}" alt="product" />
+      output = `
+      <div class="cart-table">
+        <div class="cart-table-header">
+          <div class="table-icons">
+            <span class="material-symbols-outlined"> delete </span>
           </div>
-          <div class="product-details">
-            <span class="product-name">${product.name}</span>
-            <span class="product-availability"><b>Available:</b> ${product.quantity}</span>
-          </div>
-          <div class="product-price">
-            <span class="member-price">$${product.memberPrice}</span>
-            <span class="regular-price">$${product.regularPrice}</span>
-            <button class="add-to-cart-btn" data-id="${product.id}"><i class="fa fa-cart-shopping" data-id="${product.id}"></i>Add</button>
-          </div>
+          <div class="table-name">Name</div>
+          <div class="table-quantity fc">Quantity</div>
+          <div class="table-price fc">Price</div>
+          <div class="table-total fc">Total</div>
         </div>
+        <div class="cart-table-body">
+      `;
+      for (let product of cartList) {
+        let price = 0;
+        let productTotalPrice = 0;
+
+        if (member) {
+          price = parseFloat(product.memberPrice).toFixed(2);
+        } else {
+          price = parseFloat(product.regularPrice).toFixed(2);
+        }
+
+        productTotalPrice = price * product.quantity;
+
+        output += `
+          <div class="cart-item">
+            <div class="table-icons cart-item-buttons">
+              <span class="material-symbols-outlined delete-btn" data-id="${
+                product.id
+              }"> delete </span>
+            </div>
+            <div class="table-name cart-item-name">
+              <img src="/assets/images/${product.image}" alt="product" />
+              <span class="cart-item-name">${product.name}</span>
+            </div>
+            <div class="table-quantity">
+              <span class="add-quantity-btn quantity-btn material-symbols-outlined"> add_circle </span>
+              <span>${product.quantity}</span>
+              <span class="remove-quantity-btn quantity-btn material-symbols-outlined">
+                do_not_disturb_on
+              </span>
+            </div>
+            <span class="table-price fr">$${parseFloat(price).toFixed(2)}</span>
+            <span class="table-total fr">$${parseFloat(
+              productTotalPrice
+            ).toFixed(2)}</span>
+          </div>
       `;
       }
+
+      output += `
+      </div>
+        <div class="cart-calculation">
+          <div class="totals-left">
+            <button class="button main-button">Checkout</button>
+            <button class="button cancel-button">Cancel Order</button>
+          </div>
+          <div class="totals-center">
+            <div class="total-items">
+              <span class="bold">Total Items:</span>
+              <span>6</span>
+            </div>
+          </div>
+          <div class="totals-right">
+            <div class="sub-total">
+              <span class="bold">SUB-TOTAL: </span>
+              <span class="fr">$${parseFloat(cartSubTotal).toFixed(2)}</span>
+            </div>
+            <div class="tax">
+              <span class="bold">TAX (6.5%): </span>
+              <span class="fr">$${parseFloat(cartTax).toFixed(2)}</span>
+            </div>
+            <div class="total">
+              <span class="bold">TOTAL:</span>
+              <span class="fr">$${parseFloat(cartTotal).toFixed(2)}</span>
+            </div>
+            <div class="cash">
+              <span class="bold">CASH: </span>
+              <input class="fr" type="number" name="cash" id="cash">
+            </div>
+            <div class="change">
+              <span class="bold">CHANGE: </span>
+              <span class="fr">$1.73</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
     }
 
     products.innerHTML = output;
+  }
+
+  updateCartIcon() {
+    let amount = Storage.getCartQuantity();
+    console.log(Storage.getCartQuantity());
+    if (amount !== 0) {
+      cartAmount.style.display = "block";
+      cartAmount.innerHTML = Storage.getCartQuantity();
+    } else {
+      cartAmount.style.display = "none";
+    }
   }
 
   setProductPage(product) {}
@@ -132,7 +281,7 @@ export class UI {
   setInventory(inventory) {
     // insert HTML inventory code here
     let output = "";
-    if(inventory.length === 0){
+    if (inventory.length === 0) {
       output = `
         <div>There are no Products</div>
       `;
@@ -150,17 +299,15 @@ export class UI {
           <div class="product-price">
             <span class="member-price">$${product.memberPrice}</span>
             <span class="regular-price">$${product.regularPrice}</span>
-            <button class="add-to-cart-btn" data-id="${product.id}"><i class="fa fa-cart-shopping" data-id="${product.id}"></i>Add</button>
+            <button class="add-to-cart-btn add-item" data-id="${product.id}"><i class="fa fa-cart-shopping add-item" data-id="${product.id}"></i>Add</button>
           </div>
         </div>
       `;
       }
     }
 
-
     products.innerHTML = output;
   }
-
 }
 
 export class Storage {
@@ -194,8 +341,16 @@ export class Storage {
     this.storage = localStorage.getItem("mart")
       ? JSON.parse(localStorage.getItem("mart"))
       : { cart: [] };
-    
-      return this.storage.cart;
+
+    return this.storage.cart;
+  }
+
+  static getCartQuantity() {
+    let totalItems = 0;
+    for (let item of this.storage.cart) {
+      totalItems += item.quantity;
+    }
+    return totalItems;
   }
 
   static saveInventory(inventory) {

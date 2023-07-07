@@ -15,9 +15,9 @@ inventoryData = tempInventoryData.map((product, index) => {
     id: index + 1,
     image: `${productObject[0].toLowerCase()}.jpg`,
     name: productObject[0],
-    quantity: productObject[1],
-    memberPrice: productObject[2],
-    regularPrice: productObject[3],
+    quantity: parseInt(productObject[1]),
+    regularPrice: parseFloat(productObject[2].replace("$", "")).toFixed(2),
+    memberPrice: parseFloat(productObject[3].replace("$", "")).toFixed(2),
     taxable: productObject[4],
   };
 });

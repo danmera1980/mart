@@ -1,9 +1,10 @@
-import { Inventory, ShoppingCart, Storage, UI } from "./classes.js";
-import { heroSection, productsTitle } from "./selectors.js";
+import { Inventory, Member, ShoppingCart, Storage, UI } from "./classes.js";
+import { firstName, heroSection, isMember, lastName, productsTitle } from "./selectors.js";
 
 const ui = new UI();
 const inventoryList = new Inventory();
 const cartList = new ShoppingCart();
+export const user = new Member(1, "John", "Doe", true);
 
 export const PageState = function () {
   let currentState = new homeState();
@@ -19,7 +20,10 @@ export const PageState = function () {
 
 export const homeState = function (inventory) {
   const home = document.querySelector("#home");
-  console.log(inventory, localStorage.getItem("mart"));
+
+  firstName.innerHTML = user.firstName;
+  lastName.innerHTML = user.lastName;
+  user.isMember ? (isMember.checked = true) : (isMember.checked = false);
 
   if (!localStorage.getItem("mart")) {
     Storage.tempInit();
@@ -37,8 +41,9 @@ export const homeState = function (inventory) {
   }
 };
 
-export const cartState = function (cart) {
+export const cartState = function (cart, isMember) {
   heroSection.style.display = "none";
   productsTitle.innerHTML = "Your Cart";
-  ui.setCartPage(cart);
+
+  ui.setCartPage(cart, isMember);
 };

@@ -8,9 +8,11 @@
 
   --background-color: white;
   --secondary-background-color: #ADADAD;
-
+  
+  --main-button-hover: #389a6f;
   --secondary-button-background-color: #DEF9EC;
   --cancel-button-background-color: #ff6e6e;
+  --cancel-button-hover: red;
 
   --icon-background-color: #FCAC1F;
 
@@ -165,7 +167,7 @@ main {
   padding: 20px;
 }
 
-.main-button {
+.button {
   font-family: Quicksand;
   width: 110px;
   height: 52px;
@@ -173,30 +175,24 @@ main {
   font-weight: 600;
   cursor: pointer;
   border: none;
-  background-color: var(--secondary-font-color);
   color: var(--third-font-color);
   transition: background-color 0.3s ease;
+}
+
+.main-button {
+  background-color: var(--secondary-font-color);
 }
 
 .main-button:hover {
-  background: #389a6f;
+  background: var(--main-button-hover);
 }
 
 .cancel-button{
-  font-family: Quicksand;
-  width: 110px;
-  height: 52px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
   background-color: var(--cancel-button-background-color);
-  color: var(--third-font-color);
-  transition: background-color 0.3s ease;
 }
 
 .cancel-button:hover {
-  background: red;
+  background: var(--cancel-button-hover);
 }
 
 /* Hero Design */
@@ -383,6 +379,10 @@ main {
   justify-content: flex-end;
 }
 
+.bold{
+  font-weight: 700;
+}
+
 .cart-table-header{
   display: flex;
   font-weight: 700;
@@ -416,7 +416,29 @@ main {
 }
 
 .table-quantity {
-  width: 70px;
+  width: 80px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quantity-btn{
+  cursor: pointer;
+}
+
+.add-quantity-btn{
+  color: var(--secondary-font-color);
+}
+.add-quantity-btn:hover{
+  color: var(--main-button-hover);
+}
+
+.remove-quantity-btn{
+  color: var(--cancel-button-background-color);
+}
+
+.remove-quantity-btn:hover{
+  color: var(--cancel-button-hover);
 }
 
 .table-price {

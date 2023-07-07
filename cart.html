@@ -68,47 +68,55 @@
               <!-- Insert cart items here -->
               <div class="cart-item">
                 <div class="table-icons cart-item-buttons">
-                  <span class="material-symbols-outlined delete-btn"> delete </span>
+                  <span class="material-symbols-outlined delete-btn">
+                    delete
+                  </span>
                 </div>
                 <div class="table-name cart-item-name">
                   <img src="/assets/images/milk.jpg" alt="product" />
                   <span class="cart-item-name">Milk</span>
                 </div>
-                <span class="table-quantity fr">5</span>
+                <div class="table-quantity">
+                  <span class="add-quantity-btn quantity-btn material-symbols-outlined"> add_circle </span>
+                  <span>5</span>
+                  <span class="remove-quantity-btn quantity-btn material-symbols-outlined">
+                    do_not_disturb_on
+                  </span>
+                </div>
                 <span class="table-price fr">$5.00</span>
                 <span class="table-total fr">$5.50</span>
               </div>
             </div>
             <div class="cart-calculation">
               <div class="totals-left">
-                <button class="main-button">Checkout</button>
-                <button class="cancel-button">Cancel Order</button>
+                <button class="button main-button">Checkout</button>
+                <button class="button cancel-button">Cancel Order</button>
               </div>
               <div class="totals-center">
                 <div class="total-items">
-                  <span>Total Items:</span>
+                  <span class="bold">Total Items:</span>
                   <span>6</span>
                 </div>
               </div>
               <div class="totals-right">
                 <div class="sub-total">
-                  <span>SUB-TOTAL: </span>
+                  <span class="bold">SUB-TOTAL: </span>
                   <span class="fr">$17.50</span>
                 </div>
                 <div class="tax">
-                  <span>TAX (6.5%): </span>
+                  <span class="bold">TAX (6.5%): </span>
                   <span class="fr">$0.52</span>
                 </div>
                 <div class="total">
-                  <span>TOTAL:</span>
+                  <span class="bold">TOTAL:</span>
                   <span class="fr">$18.27</span>
                 </div>
                 <div class="cash">
-                  <span>CASH: </span>
-                  <input class="fr" type="number" name="cash" id="cash">
+                  <span class="bold">CASH: </span>
+                  <input class="fr" type="number" name="cash" id="cash" />
                 </div>
                 <div class="change">
-                  <span>CHANGE: </span>
+                  <span class="bold">CHANGE: </span>
                   <span class="fr">$1.73</span>
                 </div>
               </div>
