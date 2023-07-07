@@ -1,6 +1,6 @@
 import { PageState, cartState, homeState, user } from "./PageState.js";
 import { Inventory, ShoppingCart, UI } from "./classes.js";
-import { isMember } from "./selectors.js";
+import { isMember, changeAmount } from "./selectors.js";
 import { createToaster } from "./toaster.js";
 
 const page = new PageState();
@@ -37,7 +37,7 @@ export const linksListener = (e) => {
   } else if (e.target.classList.contains("delete-btn")) {
     let deleteId = parseInt(e.target.dataset.id);
     cartList.removeProductById(deleteId);
-    createToaster('Item Removed from the cart', 3000, 'danger')
+    createToaster("Item Removed from the cart", 3000, "danger");
     page.change(new cartState(cartList, member));
   }
 };
@@ -51,6 +51,10 @@ export const changeMemberListener = () => {
   member = user.isMember;
 };
 
-export const deleteListener = (e) => {
-  console.log(e.target.dataset);
+export const cashListener = (e) => {
+  const cartTotal = document.querySelector("#cart-total");
+  const totalChange = document.querySelector("#change");
+  let total = parseFloat(cartTotal.innerHTML.replace("$", "")).toFixed(2);
+  let change = cartList.calculateChange(total, e.target.value);
+  totalChange.innerHTML = `$${change}`;
 };

@@ -1,5 +1,5 @@
 import { inventoryData } from "./data.js";
-import { cartAmount, products } from "./selectors.js";
+import { cartAmount, changeAmount, products } from "./selectors.js";
 
 export class Member {
   constructor(id, firstName, lastName, isMember) {
@@ -134,8 +134,8 @@ export class ShoppingCart {
     return tax;
   }
 
-  calculateChange(total, amout) {
-    return (amout - total).toFixed(2);
+  calculateChange(total, amount) {
+    return (amount - total).toFixed(2);
   }
 
   checkout(isMember, cash) {}
@@ -242,7 +242,7 @@ export class UI {
             </div>
             <div class="total">
               <span class="bold">TOTAL:</span>
-              <span class="fr">$${parseFloat(cartTotal).toFixed(2)}</span>
+              <span id="cart-total" class="fr">$${parseFloat(cartTotal).toFixed(2)}</span>
             </div>
             <div class="cash">
               <span class="bold">CASH: </span>
@@ -250,7 +250,7 @@ export class UI {
             </div>
             <div class="change">
               <span class="bold">CHANGE: </span>
-              <span class="fr">$1.73</span>
+              <span id="change" class="fr">$0.00</span>
             </div>
           </div>
         </div>
@@ -270,6 +270,7 @@ export class UI {
       cartAmount.style.display = "none";
     }
   }
+
 
   setProductPage(product) {}
 
