@@ -1,6 +1,7 @@
 import { PageState, cartState, homeState, user } from "./PageState.js";
 import { Inventory, ShoppingCart, UI } from "./classes.js";
-import { isMember, changeAmount } from "./selectors.js";
+import { openDialog } from "./dialogs.js";
+import { isMember } from "./selectors.js";
 import { createToaster } from "./toaster.js";
 
 const page = new PageState();
@@ -35,19 +36,31 @@ export const linksListener = (e) => {
   } else if (e.target.classList.contains("homeLink")) {
     page.change(new homeState(inventoryList.getInventory()));
   } else if (e.target.classList.contains("delete-btn")) {
-    let deleteId = parseInt(e.target.dataset.id);
-    cartList.removeProductById(deleteId);
-    createToaster("Item Removed from the cart", 3000, "danger");
-    ui.updateCartIcon();
-    page.change(new cartState(cartList, member));
+    openDialog("Are you sure you want to remove this item?", (confirmed) => {
+      if (confirmed) {
+        let deleteId = parseInt(e.target.dataset.id);
+        cartList.removeProductById(deleteId);
+        createToaster("Item Removed from the cart", 3000, "danger");
+        ui.updateCartIcon();
+        page.change(new cartState(cartList, member));
+      }
+    });
   } else if (e.target.id === "checkout-btn") {
-    cartList.checkout();
-    page.change(new homeState(inventoryList.getInventory()));
-    createToaster("Items Purchased!", 3000);
+    openDialog("Are you sure you want to Checkout?", (confirmed) => {
+      if (confirmed) {
+        cartList.checkout();
+        page.change(new homeState(inventoryList.getInventory()));
+        createToaster("Items Purchased!", 3000);
+      }
+    });
   } else if (e.target.id === "cancel-btn") {
-    cartList.cancel();
-    page.change(new homeState(inventoryList.getInventory()));
-    createToaster("Transaction Canceled!", 3000, "danger");
+    openDialog("Are you sure you want to cancel?", (confirmed) => {
+      if (confirmed) {
+        cartList.cancel();
+        page.change(new homeState(inventoryList.getInventory()));
+        createToaster("Transaction Canceled!", 3000, "danger");
+      }
+    });
   }
 };
 
