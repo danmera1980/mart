@@ -153,8 +153,6 @@ export class ShoppingCart {
     return change;
   }
 
-  updateInventory(cart) {}
-
   checkout() {
     let checkout = Storage.getCheckout();
     let transactionId = parseInt(Storage.getTransactionId()) + 1;
