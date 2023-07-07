@@ -2,6 +2,8 @@
 
 This is my solution to the Jerry's Quick Mart Challenge. The solution is implemented in JavaScript as a single-page application without using any external libraries or frameworks, and designed using HTML as well as CSS3.
 
+The web application can be viewed at: [http://mart.danmera.com](http://mart.danmera.com)
+
 ## Features
 
 - Select whether the customer is a Rewards Member or Regular customer.
@@ -38,11 +40,3 @@ This is my solution to the Jerry's Quick Mart Challenge. The solution is impleme
 │ └── data
 │   └── inventory.txt # Text file containing the inventory data
 ```
-
-## License
-
-This solution is licensed under the [MIT License](LICENSE).
-
-Feel free to reach out if you have any questions or need further assistance.
-
-Happy coding!
