@@ -1,6 +1,7 @@
 import { PageState, cartState, homeState, user } from "./PageState.js";
 import { Inventory, ShoppingCart, UI } from "./classes.js";
 import { isMember } from "./selectors.js";
+import { createToaster } from "./toaster.js";
 
 const page = new PageState();
 const inventoryList = new Inventory();
@@ -26,7 +27,8 @@ export const linksListener = (e) => {
     if (id) {
       tempProduct = inventoryList.getProductByID(id);
       cartList.addProduct(tempProduct);
-      ui.updateCartIcon()
+      createToaster("Item added to the cart", 3000);
+      ui.updateCartIcon();
     } else {
       page.change(new homeState(inventoryList.getInventory()));
     }
@@ -35,6 +37,7 @@ export const linksListener = (e) => {
   } else if (e.target.classList.contains("delete-btn")) {
     let deleteId = parseInt(e.target.dataset.id);
     cartList.removeProductById(deleteId);
+    createToaster('Item Removed from the cart', 3000, 'danger')
     page.change(new cartState(cartList, member));
   }
 };

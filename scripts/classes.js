@@ -263,7 +263,6 @@ export class UI {
 
   updateCartIcon() {
     let amount = Storage.getCartQuantity();
-    console.log(Storage.getCartQuantity());
     if (amount !== 0) {
       cartAmount.style.display = "block";
       cartAmount.innerHTML = Storage.getCartQuantity();
