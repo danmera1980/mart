@@ -7,6 +7,8 @@ async function fetchInventory() {
   return inventoryData;
 }
 
+export async function updateTransactionId() {}
+
 let tempInventoryData = await fetchInventory();
 
 inventoryData = tempInventoryData.map((product, index) => {
@@ -21,4 +23,3 @@ inventoryData = tempInventoryData.map((product, index) => {
     taxable: productObject[4],
   };
 });
-

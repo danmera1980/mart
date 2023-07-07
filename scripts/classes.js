@@ -140,17 +140,23 @@ export class ShoppingCart {
     return change;
   }
 
+  updateInventory(cart) {}
+
   checkout() {
     let checkout = Storage.getCheckout();
+    let transactionId = parseInt(Storage.getTransactionId()) + 1;
+
+    checkout.id = transactionId.toString().padStart(6, "0");
+
     let receiptFilename = `transaction_${checkout.id}_${checkout.dateShort}.txt`;
     let receiptContent = `
       ${checkout.dateLong}
       TRANSACTION: ${checkout.id}
       ITEM\t\t\tQUANTITY\t\t\tUNIT PRICE\t\t\tTOTAL`;
-    
+
     for (let item of checkout.cart) {
       receiptContent += ` 
-          ${item.name}\t\t\t${item.quantity}\t\t\t${item.price}\t\t\t${item.total}`;
+      ${item.name}\t\t\t${item.quantity}\t\t\t${item.price}\t\t\t${item.totalPrice}`;
     }
 
     receiptContent += `
@@ -164,11 +170,27 @@ export class ShoppingCart {
       **********************************************************
       YOU SAVED: $${checkout.saved}
     `;
-    console.log(checkout.cart);
+
+    this.createFile(receiptFilename, receiptContent);
+    Storage.updateInventory(checkout.cart);
+    Storage.updateTransactionId();
   }
 
   cancel() {
-    console.log("cancel");
+    Storage.cancelTransaction();
+  }
+
+  createFile(filename, content) {
+    let a = window.document.createElement("a");
+    a.href = window.URL.createObjectURL(
+      new Blob([content], { type: "text/plain" })
+    );
+    a.download = filename;
+
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
   }
 }
 
@@ -194,6 +216,7 @@ export class UI {
     let cartTotal = parseFloat(cartSubTotal) + parseFloat(cartTax);
     let checkout = {};
     let today = new Date();
+    let cartItems = [];
     let dateLongFormat = today.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
@@ -206,6 +229,13 @@ export class UI {
         year: "numeric",
       })
       .replace(/\//g, "");
+
+    let totalItems = 0;
+    let saved = 0;
+
+    for (let item of cartList) {
+      totalItems += item.quantity;
+    }
 
     if (cartList.length === 0) {
       output = `
@@ -228,6 +258,8 @@ export class UI {
       for (let product of cartList) {
         let price = 0;
         let productTotalPrice = 0;
+        let savedProductTotalPrice = 0;
+        let savedPrice = parseFloat(product.regularPrice).toFixed(2);
 
         if (member) {
           price = parseFloat(product.memberPrice).toFixed(2);
@@ -236,6 +268,20 @@ export class UI {
         }
 
         productTotalPrice = price * product.quantity;
+        savedProductTotalPrice = savedPrice * product.quantity;
+
+        let item = {
+          id: product.id,
+          name: product.name,
+          quantity: product.quantity,
+          price: parseFloat(price),
+          savedUnitPrice: parseFloat(savedPrice),
+          totalPrice: parseFloat(productTotalPrice),
+          savedPrice: parseFloat(savedProductTotalPrice),
+          taxable: product.taxable === "Taxable" ? true : false,
+        };
+
+        cartItems.push(item);
 
         output += `
           <div class="cart-item">
@@ -273,7 +319,7 @@ export class UI {
           <div class="totals-center">
             <div class="total-items">
               <span class="bold">Total Items:</span>
-              <span>6</span>
+              <span>${totalItems}</span>
             </div>
           </div>
           <div class="totals-right">
@@ -305,18 +351,33 @@ export class UI {
     `;
     }
 
+    let savedTax = 0;
+    let savedSubTotal = 0;
+    let savedTotal = 0;
+
+    for (let item of cartItems) {
+      if (item.taxable) {
+        savedTax +=
+          ((parseFloat(item.savedUnitPrice) * 6.5) / 100) * item.quantity;
+      }
+      savedSubTotal += parseFloat(item.savedPrice);
+    }
+
+    savedTotal = savedTax + savedSubTotal;
+    saved = savedTotal - cartTotal;
+
     checkout = {
       id: 0,
       dateLong: dateLongFormat,
       dateShort: dateShortFormat,
-      cart: cartList,
-      totalItems: 6,
-      subTotal: cartSubTotal,
-      tax: cartTax,
-      total: cartTotal,
+      cart: cartItems,
+      totalItems: totalItems,
+      subTotal: parseFloat(cartSubTotal).toFixed(2),
+      tax: parseFloat(cartTax).toFixed(2),
+      total: parseFloat(cartTotal).toFixed(2),
       cash: 0.0,
       change: 0.0,
-      saved: 0.0,
+      saved: parseFloat(saved).toFixed(2),
     };
 
     Storage.saveCheckout(checkout);
@@ -376,7 +437,7 @@ export class Storage {
   constructor() {
     this.storage = localStorage.getItem("mart")
       ? localStorage.getItem("mart")
-      : { inventory: [], cart: [], checkout: {} };
+      : { inventory: [], cart: [], checkout: {}, transactionId: 0 };
   }
 
   static saveStorage(storage) {
@@ -423,6 +484,20 @@ export class Storage {
     return totalItems;
   }
 
+  static getTransactionId() {
+    this.storage = localStorage.getItem("mart")
+      ? JSON.parse(localStorage.getItem("mart"))
+      : { transactionId: 0 };
+
+    return this.storage.transactionId;
+  }
+
+  static updateTransactionId() {
+    let id = parseInt(this.getTransactionId());
+    this.storage.transactionId = parseInt(id) + 1;
+    this.saveStorage(this.storage);
+  }
+
   static saveInventory(inventory) {
     this.storage.inventory = inventory;
     this.saveStorage(this.storage);
@@ -430,6 +505,23 @@ export class Storage {
 
   static saveCart(cart) {
     this.storage.cart = cart;
+    this.saveStorage(this.storage);
+  }
+
+  static cancelTransaction(){
+    this.storage.cart = []
+    this.saveStorage(this.storage)
+  }
+
+  static updateInventory(cart) {
+    for (let item of this.storage.inventory){
+      for(let product of cart){
+        if (item.id === product.id) {
+          item.quantity = parseInt(item.quantity) - parseInt(product.quantity);
+        }
+      }
+    }
+    this.storage.cart = [];
     this.saveStorage(this.storage);
   }
 
@@ -459,6 +551,7 @@ export class Storage {
       }),
       cart: [],
       checkout: {},
+      transactionId: 0,
     };
     this.saveStorage(this.storage);
   }

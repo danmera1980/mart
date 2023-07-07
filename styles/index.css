@@ -55,9 +55,10 @@
 
 .toaster {
   position: relative;
-  display: inline-block;
+  display: block;
   height: 30px;
   padding: 20px 30px 10px 20px;
+  margin-bottom: 10px;
   background-color: var(--main-button-hover);
   color: #fff;
   border-radius: 5px;

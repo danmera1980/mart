@@ -38,13 +38,16 @@ export const linksListener = (e) => {
     let deleteId = parseInt(e.target.dataset.id);
     cartList.removeProductById(deleteId);
     createToaster("Item Removed from the cart", 3000, "danger");
+    ui.updateCartIcon();
     page.change(new cartState(cartList, member));
   } else if (e.target.id === "checkout-btn") {
-    // const cartTotal = document.querySelector("#cart-total");
-    // const totalChange = document.querySelector("#change");
     cartList.checkout();
+    page.change(new homeState(inventoryList.getInventory()));
+    createToaster("Items Purchased!", 3000);
   } else if (e.target.id === "cancel-btn") {
     cartList.cancel();
+    page.change(new homeState(inventoryList.getInventory()));
+    createToaster("Transaction Canceled!", 3000, "danger");
   }
 };
 
