@@ -39,6 +39,12 @@ export const linksListener = (e) => {
     cartList.removeProductById(deleteId);
     createToaster("Item Removed from the cart", 3000, "danger");
     page.change(new cartState(cartList, member));
+  } else if (e.target.id === "checkout-btn") {
+    // const cartTotal = document.querySelector("#cart-total");
+    // const totalChange = document.querySelector("#change");
+    cartList.checkout();
+  } else if (e.target.id === "cancel-btn") {
+    cartList.cancel();
   }
 };
 

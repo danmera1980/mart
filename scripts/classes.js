@@ -135,10 +135,41 @@ export class ShoppingCart {
   }
 
   calculateChange(total, amount) {
-    return (amount - total).toFixed(2);
+    let change = (amount - total).toFixed(2);
+    Storage.updateChange(amount, change);
+    return change;
   }
 
-  checkout(isMember, cash) {}
+  checkout() {
+    let checkout = Storage.getCheckout();
+    let receiptFilename = `transaction_${checkout.id}_${checkout.dateShort}.txt`;
+    let receiptContent = `
+      ${checkout.dateLong}
+      TRANSACTION: ${checkout.id}
+      ITEM\t\t\tQUANTITY\t\t\tUNIT PRICE\t\t\tTOTAL`;
+    
+    for (let item of checkout.cart) {
+      receiptContent += ` 
+          ${item.name}\t\t\t${item.quantity}\t\t\t${item.price}\t\t\t${item.total}`;
+    }
+
+    receiptContent += `
+      **********************************************************
+      TOTAL NUMBER OF ITEMS SOLD: ${checkout.totalItems}
+      SUB-TOTAL: $${checkout.subTotal}
+      TAX (6.5%): $${checkout.tax}
+      TOTAL: $${checkout.total}
+      CASH: $${checkout.cash}
+      CHANGE: $${checkout.change}
+      **********************************************************
+      YOU SAVED: $${checkout.saved}
+    `;
+    console.log(checkout.cart);
+  }
+
+  cancel() {
+    console.log("cancel");
+  }
 }
 
 export class UI {
@@ -161,6 +192,20 @@ export class UI {
     let cartSubTotal = cart.calculateSubtotal(member).toFixed(2);
     let cartTax = cart.calculateTax(member).toFixed(2);
     let cartTotal = parseFloat(cartSubTotal) + parseFloat(cartTax);
+    let checkout = {};
+    let today = new Date();
+    let dateLongFormat = today.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    let dateShortFormat = today
+      .toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      })
+      .replace(/\//g, "");
 
     if (cartList.length === 0) {
       output = `
@@ -222,8 +267,8 @@ export class UI {
       </div>
         <div class="cart-calculation">
           <div class="totals-left">
-            <button class="button main-button">Checkout</button>
-            <button class="button cancel-button">Cancel Order</button>
+            <button id="checkout-btn" class="button main-button">Checkout</button>
+            <button id="cancel-btn" class="button cancel-button">Cancel Order</button>
           </div>
           <div class="totals-center">
             <div class="total-items">
@@ -242,11 +287,13 @@ export class UI {
             </div>
             <div class="total">
               <span class="bold">TOTAL:</span>
-              <span id="cart-total" class="fr">$${parseFloat(cartTotal).toFixed(2)}</span>
+              <span id="cart-total" class="fr">$${parseFloat(cartTotal).toFixed(
+                2
+              )}</span>
             </div>
             <div class="cash">
               <span class="bold">CASH: </span>
-              <input class="fr" type="number" name="cash" id="cash">
+              <input class="fr" type="number" name="cash" id="cash" value="0.00">
             </div>
             <div class="change">
               <span class="bold">CHANGE: </span>
@@ -257,6 +304,22 @@ export class UI {
       </div>
     `;
     }
+
+    checkout = {
+      id: 0,
+      dateLong: dateLongFormat,
+      dateShort: dateShortFormat,
+      cart: cartList,
+      totalItems: 6,
+      subTotal: cartSubTotal,
+      tax: cartTax,
+      total: cartTotal,
+      cash: 0.0,
+      change: 0.0,
+      saved: 0.0,
+    };
+
+    Storage.saveCheckout(checkout);
 
     products.innerHTML = output;
   }
@@ -270,7 +333,6 @@ export class UI {
       cartAmount.style.display = "none";
     }
   }
-
 
   setProductPage(product) {}
 
@@ -314,7 +376,7 @@ export class Storage {
   constructor() {
     this.storage = localStorage.getItem("mart")
       ? localStorage.getItem("mart")
-      : { inventory: [], cart: [] };
+      : { inventory: [], cart: [], checkout: {} };
   }
 
   static saveStorage(storage) {
@@ -345,6 +407,14 @@ export class Storage {
     return this.storage.cart;
   }
 
+  static getCheckout() {
+    this.storage = localStorage.getItem("mart")
+      ? JSON.parse(localStorage.getItem("mart"))
+      : { checkout: [] };
+
+    return this.storage.checkout;
+  }
+
   static getCartQuantity() {
     let totalItems = 0;
     for (let item of this.storage.cart) {
@@ -363,6 +433,17 @@ export class Storage {
     this.saveStorage(this.storage);
   }
 
+  static saveCheckout(checkout) {
+    this.storage.checkout = checkout;
+    this.saveStorage(this.storage);
+  }
+
+  static updateChange(cash, change) {
+    this.storage.checkout.cash = cash;
+    this.storage.checkout.change = change;
+    this.saveStorage(this.storage);
+  }
+
   static tempInit() {
     this.storage = {
       inventory: inventoryData.map((product) => {
@@ -377,6 +458,7 @@ export class Storage {
         };
       }),
       cart: [],
+      checkout: {},
     };
     this.saveStorage(this.storage);
   }
