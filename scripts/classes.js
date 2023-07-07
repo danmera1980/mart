@@ -96,6 +96,25 @@ export class ShoppingCart {
     return added;
   }
 
+  removeOneItem(product) {
+    let deleted = false;
+    let itemIndex = this.cart.findIndex((item) => product.id === item.id);
+
+    if (this.cart[itemIndex].quantity > 1) {
+      this.cart[itemIndex].quantity =
+        parseInt(this.cart[itemIndex].quantity) - 1;
+    } else {
+      this.removeProductById(product.id);
+    }
+
+    Storage.saveCart(this.cart);
+    deleted = true;
+
+    console.log(this.cart[itemIndex]);
+
+    return deleted;
+  }
+
   removeProductById(productId) {
     const index = this.cart.findIndex((product) => product.id === productId);
 
@@ -314,9 +333,13 @@ export class UI {
               <span class="cart-item-name">${product.name}</span>
             </div>
             <div class="table-quantity">
-              <span class="add-quantity-btn quantity-btn material-symbols-outlined"> add_circle </span>
+              <span class="add-quantity-btn quantity-btn material-symbols-outlined" data-id="${
+                product.id
+              }"> add_circle </span>
               <span>${product.quantity}</span>
-              <span class="remove-quantity-btn quantity-btn material-symbols-outlined">
+              <span class="remove-quantity-btn quantity-btn material-symbols-outlined" data-id="${
+                product.id
+              }">
                 do_not_disturb_on
               </span>
             </div>

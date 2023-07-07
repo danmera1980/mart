@@ -20,17 +20,22 @@ export const linksListener = (e) => {
   e.preventDefault();
   let tempProduct;
   let id = e.target.dataset.id;
+
   if (
     e.target.hasAttribute("data-id") &&
     e.target.classList.contains("add-item")
   ) {
     if (id) {
       tempProduct = inventoryList.getProductByID(id);
-      if(cartList.addProduct(tempProduct, inventoryList)){
+      if (cartList.addProduct(tempProduct, inventoryList)) {
         createToaster("Item added to the cart", 3000);
         ui.updateCartIcon();
       } else {
-        createToaster("Item cannot be added to the cart.\nThere are no more of this item.", 3000, 'warning');
+        createToaster(
+          "Item cannot be added to the cart.\nThere are no more of this item.",
+          3000,
+          "warning"
+        );
       }
     } else {
       page.change(new homeState(inventoryList.getInventory()));
@@ -63,6 +68,26 @@ export const linksListener = (e) => {
         createToaster("Transaction Canceled!", 3000, "danger");
       }
     });
+  } else if (e.target.classList.contains("add-quantity-btn")) {
+    console.log(e.target.dataset.id);
+
+    tempProduct = inventoryList.getProductByID(e.target.dataset.id);
+    if (cartList.addProduct(tempProduct, inventoryList)) {
+      ui.updateCartIcon();
+      page.change(new cartState(cartList, member));
+    } else {
+      createToaster(
+        "Item cannot be added to the cart.\nThere are no more of this item.",
+        3000,
+        "warning"
+      );
+    }
+  } else if (e.target.classList.contains("remove-quantity-btn")) {
+    tempProduct = inventoryList.getProductByID(e.target.dataset.id);
+    if (cartList.removeOneItem(tempProduct)) {
+      ui.updateCartIcon();
+      page.change(new cartState(cartList, member));
+    } 
   }
 };
 
