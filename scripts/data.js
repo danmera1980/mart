@@ -1,7 +1,7 @@
 export let inventoryData;
 
 async function fetchInventory() {
-  const response = await fetch("/assets/data/inventory.txt");
+  const response = await fetch("assets/data/inventory.txt");
   const products = await response.text();
   inventoryData = products.split("\n");
   return inventoryData;
