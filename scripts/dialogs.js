@@ -45,13 +45,11 @@ export function openDialog(text, callback) {
 
   dialogOverlay.style.display = "block";
 
-  // Store event listeners in an object for reference
   const eventListeners = {
     confirmHandler,
     cancelHandler,
   };
 
-  // Attach the event listeners to the dialogOverlay element
   dialogOverlay.eventListeners = eventListeners;
 }
 
@@ -59,14 +57,12 @@ function closeDialog() {
   const dialogOverlay = document.getElementById("dialogOverlay");
   const eventListeners = dialogOverlay.eventListeners;
 
-  // Remove event listeners from the buttons
   const confirmButton = dialogOverlay.querySelector("button");
   const cancelButton = dialogOverlay.querySelector("button:last-child");
 
   confirmButton.removeEventListener("click", eventListeners.confirmHandler);
   cancelButton.removeEventListener("click", eventListeners.cancelHandler);
 
-  // Remove the dialogOverlay from the DOM
   dialogOverlay.style.display = "none";
   document.body.removeChild(dialogOverlay);
 }

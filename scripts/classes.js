@@ -36,15 +36,9 @@ export class Inventory {
     return this.inventory;
   }
 
-  newProduct(product) {}
-
   getProductByID(id) {
     return this.inventory.find((product) => product.id === parseInt(id));
   }
-
-  saveProduct(product) {}
-
-  deleteProductByID(id) {}
 
   static getNewId() {
     this.inventory = Storage.getStorage().inventory;
@@ -109,8 +103,6 @@ export class ShoppingCart {
 
     Storage.saveCart(this.cart);
     deleted = true;
-
-    console.log(this.cart[itemIndex]);
 
     return deleted;
   }
@@ -436,12 +428,6 @@ export class UI {
       cartAmount.style.display = "none";
     }
   }
-
-  setProductPage(product) {}
-
-  setNewProductPage(product) {}
-
-  setEditProductPage(product) {}
 
   setInventory(inventory) {
     // insert HTML inventory code here

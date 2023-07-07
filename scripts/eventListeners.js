@@ -69,8 +69,6 @@ export const linksListener = (e) => {
       }
     });
   } else if (e.target.classList.contains("add-quantity-btn")) {
-    console.log(e.target.dataset.id);
-
     tempProduct = inventoryList.getProductByID(e.target.dataset.id);
     if (cartList.addProduct(tempProduct, inventoryList)) {
       ui.updateCartIcon();
