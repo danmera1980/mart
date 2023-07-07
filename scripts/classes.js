@@ -327,9 +327,9 @@ export class UI {
               }"> delete </span>
             </div>
             <div class="table-name cart-item-name">
-              <img class="cart-item-image" src="/assets/images/${
+              <img class="cart-item-image" src="assets/images/${
                 product.image
-              }" alt="product" onError="this.onerror=null;this.src='/assets/images/no-image.png';" />
+              }" alt="product" onError="this.onerror=null;this.src='assets/images/no-image.png';" />
               <span class="cart-item-name">${product.name}</span>
             </div>
             <div class="table-quantity">
@@ -455,7 +455,7 @@ export class UI {
         output += `
         <div class="product-item">
           <div class="product-image">
-            <img class="item-image" src="/assets/images/${product.image}" alt="product" />
+            <img class="item-image" src="assets/images/${product.image}" alt="product" />
           </div>
           <div class="product-details">
             <span class="product-name">${product.name}</span>
